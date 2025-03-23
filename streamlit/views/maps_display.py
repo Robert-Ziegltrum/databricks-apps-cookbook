@@ -96,7 +96,20 @@ table = [
         "description": "Display the streamlit map",
         "code": """
         ```python
-         st.map(df, latitude="latitude", longitude="longitude")
+            conn = get_connection(http_path_input)
+            df = read_table(table_name, conn)
+            
+            st.dataframe(df)
+
+            if 'latitude' in df.columns and 'longitude' in df.columns:
+                df['latitude'] = pd.to_numeric(df['latitude'], errors='coerce')
+                df['longitude'] = pd.to_numeric(df['longitude'], errors='coerce')
+                df = df.dropna(subset=['latitude', 'longitude'])
+                
+                if not df.empty:
+                    st.map(df, latitude="latitude", longitude="longitude")
+            else:
+                st.warning("no longitude, latitude found in the table")
 
 
         ```
