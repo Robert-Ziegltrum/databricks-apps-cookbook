@@ -2,15 +2,14 @@ import pandas as pd
 from databricks import sql
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.core import Config
-from folium.plugins import Draw
 import streamlit_hexviz as shv
 import streamlit as st
 import numpy as np
 
 st.header(body="Visualizations", divider=True)
-st.subheader("Map display and interaction")
+st.subheader("Map display with geo spatial index H3")
 st.write(
-    "This recipe enables you to display geographic data on a map and collect user geo input through interactive map drawing."
+    "This recipe enables you to display geographic data on a map with H3"
 )
 
 cfg = Config()
@@ -106,12 +105,12 @@ with tab_a:
                     conn = get_connection(http_path)
                     df = read_table(table_name, conn)
 
-                st.dataframe(df)
+                    st.dataframe(df)
 
-                try:
-                    shv.h3_choropleth(df, h3_col=h3_col)
-                except:
-                    st.warning('no H3 index found')
+                    try:
+                        shv.h3_choropleth(df, h3_col=h3_col)
+                    except:
+                        st.warning('no H3 index found')
     st.info('Streamlit-hexviz enables users to navigate through the different resolutions and change coloring with navigation in the sidebar')
 with tab_b:
     st.markdown("### Display geo data from a table")
@@ -154,10 +153,11 @@ conn = get_connection(http_path)
 df = read_table(table_name, conn)
 
 # Display map with latitude/longitude columns
-shv.map(df, lat="latitude", lon="longitude")
+shv.h3_map(df, lat="latitude", lon="longitude")
 
 
 # Display map in case table contains H3 index
+h3_col= 'your_h3_column_name'
 shv.h3_choropleth(df, h3_col=h3_col)
 
     """
